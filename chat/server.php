@@ -22,8 +22,8 @@ function getMessages ($pdo)
 function insertMessage ($pdo, $payload)
 {
     try {
-        $prp = $pdo->prepare("INSERT INTO messages(name, message,created_at) VALUES(:name, :message, :created_at)");
-        $prp->bindParam(":name", $payload['name']);
+        $prp = $pdo->prepare("INSERT INTO messages(nickname, message,created_at) VALUES(:nickname, :message, :created_at)");
+        $prp->bindParam(":nickname", $payload['nickname']);
         $prp->bindParam(":message", $payload['message']);
         $prp->bindParam(":created_at", time());
         $prp->execute();
@@ -33,4 +33,19 @@ function insertMessage ($pdo, $payload)
     }
 }
 
+header('Content-Type: application/json');
+if (isset($_GET)) {
+    $data = getMessages($pdo);
+    echo json_encode($data);
+}
+
+if (isset($_POST['nickname'])) {
+    $nickname = $_POST['nickname'];
+    $message = $_POST['message'];
+    insertMessage($pdo, [
+        'nickname' => $nickname,
+        'message' => $message
+    ]);
+    echo json_encode(array('message' => 'insert success'));
+}
 ?>
